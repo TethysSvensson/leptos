@@ -1957,7 +1957,7 @@ where
 ///     Ok(format!("{method:?}"))
 /// }
 /// ```
-pub async fn extract<T>() -> Result<T, ServerFnError>
+pub async fn extract<T, E>() -> Result<T, ServerFnError<E>>
 where
     T: Sized + FromRequestParts<()>,
     T::Rejection: Debug,
@@ -1972,7 +1972,9 @@ where
 /// therefore be used in an extractor. The compiler can often infer this type.
 ///
 /// Any error that occurs during extraction is converted to a [`ServerFnError`].
-pub async fn extract_with_state<T, S>(state: &S) -> Result<T, ServerFnError>
+pub async fn extract_with_state<T, S, E>(
+    state: &S,
+) -> Result<T, ServerFnError<E>>
 where
     T: Sized + FromRequestParts<S>,
     T::Rejection: Debug,
