@@ -1962,7 +1962,7 @@ where
     T: Sized + FromRequestParts<()>,
     T::Rejection: Debug,
 {
-    extract_with_state::<T, ()>(&()).await
+    extract_with_state::<T, (), E>(&()).await
 }
 
 /// A helper to make it easier to use Axum extractors in server functions. This
@@ -1980,8 +1980,9 @@ where
     T::Rejection: Debug,
 {
     let mut parts = use_context::<Parts>().ok_or_else(|| {
-        ServerFnError::new(
-            "should have had Parts provided by the leptos_axum integration",
+        ServerFnError::ServerError(
+            "should have had Parts provided by the leptos_axum integration"
+                .to_string(),
         )
     })?;
     T::from_request_parts(&mut parts, state)
