@@ -1805,33 +1805,6 @@ where
             .map(|p| p.path.as_str())
             .collect::<HashSet<_>>();
 
-        // register server functions
-        for (path, method) in server_fn::axum::server_fn_paths() {
-            let cx_with_state = cx_with_state.clone();
-            let handler = move |req: Request<Body>| async move {
-                handle_server_fns_with_context(cx_with_state, req).await
-            };
-
-            if !excluded.contains(path) {
-                router = router.route(
-                    path,
-                    match method {
-                        Method::GET => get(handler),
-                        Method::POST => post(handler),
-                        Method::PUT => put(handler),
-                        Method::DELETE => delete(handler),
-                        Method::PATCH => patch(handler),
-                        _ => {
-                            panic!(
-                                "Unsupported server function HTTP method: \
-                                 {method:?}"
-                            );
-                        }
-                    },
-                );
-            }
-        }
-
         // register router paths
         for listing in paths.iter().filter(|p| !p.exclude) {
             let path = listing.path();
